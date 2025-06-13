@@ -13,12 +13,15 @@ const uploadCloudinary = async (localFilePath) => {
     // upload file to cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
+      folder: "garbage_images", // Specify the folder in Cloudinary
+      use_filename: true, // Use the original file name
     });
     // file has been successful uploaded
     // console.log("file path URL", response.url);
+    fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath); //remove locally saved temparay file whose failed  in uploading
+    fs.unlinkSync(localFilePath);
     return null;
   }
 };

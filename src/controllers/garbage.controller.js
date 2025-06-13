@@ -1,4 +1,5 @@
 import { Garbage } from "../models/garbage.model.js";
+import { uploadCloudinary } from "../utils/cloudinary.js";
 
 export const createGarbage = async (req, res) => {
   try {
@@ -10,6 +11,14 @@ export const createGarbage = async (req, res) => {
     // Extract images from Multer
     const files = req.files?.images || [];
     const images = files.map((file) => file.path); // or `file.filename` if not using full path
+    // If using Cloudinary, you can upload images like this:
+    const uploadedImages = [];
+    for (const file of files) {
+      const uploadedImage = await uploadCloudinary(file.path);
+      if (uploadedImage) {
+        uploadedImages.push(uploadedImage.secure_url); // Use secure_url for HTTPS
+      }
+    }
 
     // Validate inputs
     if (!title || !description || images.length === 0 || !location) {
@@ -25,7 +34,7 @@ export const createGarbage = async (req, res) => {
     const newGarbage = await Garbage.create({
       title,
       description,
-      images,
+      images: uploadedImages.length > 0 ? uploadedImages : images, // Use Cloudinary images if available
       location: parsedLocation,
       user: userId,
     });

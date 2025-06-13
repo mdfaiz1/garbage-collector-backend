@@ -19,6 +19,7 @@ router.post(
       maxCount: 5, // Limit to 5 images
     },
   ]),
+  verifyUserJWT,
   createGarbage
 );
 router.get("/", getAllGarbage);
